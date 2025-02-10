@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #555;
+            text-align: center;
+        }
+
+        form {
+            margin: 20px 0;
+        }
+
+        form select,
+        form input,
+        form button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
+        .logout {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+            background-color: #d9534f;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 1em;
+        }
+
+        .logout:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ user.username }}</h1>
+        <p>Balance: ${{ user.balance }}</p>
+
+        <h2>Deposit / Withdraw</h2>
+        <form method="post">
+            <select name="action">
+                <option value="deposit">Deposit</option>
+                <option value="withdraw">Withdraw</option>
+            </select>
+            <input type="number" name="amount" placeholder="Enter amount" step="0.01" required>
+            <button type="submit">Submit</button>
+        </form>
+
+        <h2>Transfer to Another User</h2>
+        <form method="post">
+            <input type="hidden" name="action" value="transfer">
+            <input type="text" name="recipient" placeholder="Recipient Username" required>
+            <input type="number" name="amount" placeholder="Enter amount" step="0.01" required>
+            <button type="submit">Transfer</button>
+        </form>
+
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+</body>
+</html>

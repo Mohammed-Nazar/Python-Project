@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table thead {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        table th,
+        table td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .form-container {
+            margin-top: 20px;
+        }
+
+        form input,
+        form button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
+        .logout {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+            background-color: #d9534f;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 1em;
+        }
+
+        .logout:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <h2>Manage Users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Balance</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for username, user in users.items() %}
+                <tr>
+                    <td>{{ username }}</td>
+                    <td>${{ user.balance }}</td>
+                    <td>{% if user.is_admin %}Admin{% else %}User{% endif %}</td>
+                    <td>
+                        <form method="post" style="display: inline;">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="username" value="{{ username }}">
+                            <button type="submit" style="background-color: #d9534f; color: white; border: none; cursor: pointer;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Add New User</h2>
+        <div class="form-container">
+            <form method="post">
+                <input type="hidden" name="action" value="add">
+                <input type="text" name="username" placeholder="Enter username" required>
+                <input type="number" name="balance" placeholder="Initial balance" step="0.01" required>
+                <input type="password" name="password" placeholder="Enter password" required>
+                <input type="text" name="is_admin" placeholder="Admin" required>
+                <button type="submit">Add User</button>
+            </form>            
+        </div>
+
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+</body>
+</html>
