@@ -79,6 +79,32 @@
         .logout:hover {
             background-color: #c9302c;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table thead {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        table th,
+        table td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
     </style>
 </head>
 <body>
@@ -86,6 +112,7 @@
         <h1>Welcome, {{ user.username }}</h1>
         <p>Balance: ${{ user.balance }}</p>
 
+        <!-- Deposit / Withdraw Form -->
         <h2>Deposit / Withdraw</h2>
         <form method="post">
             <select name="action">
@@ -96,6 +123,7 @@
             <button type="submit">Submit</button>
         </form>
 
+        <!-- Transfer Form -->
         <h2>Transfer to Another User</h2>
         <form method="post">
             <input type="hidden" name="action" value="transfer">
@@ -104,6 +132,38 @@
             <button type="submit">Transfer</button>
         </form>
 
+        <!-- Transaction History Section -->
+        <h2>Transaction History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Balance After</th>
+                    <th>Recipient/Sender</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in user.transactions %}
+                <tr>
+                    <td>{{ transaction.type }}</td>
+                    <td>${{ transaction.amount }}</td>
+                    <td>${{ transaction.balance_after }}</td>
+                    <td>
+                        {% if transaction.type == 'transfer' %}
+                            To: {{ transaction.recipient }}
+                        {% elif transaction.type == 'received' %}
+                            From: {{ transaction.sender }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Logout Button -->
         <a href="/logout" class="logout">Logout</a>
     </div>
 </body>

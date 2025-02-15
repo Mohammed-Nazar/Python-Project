@@ -27,7 +27,7 @@ class UserManager:
         users = UserManager.load_users()
         if username in users:
             return False
-        users[username] = {'password': password, 'balance': 0, 'is_admin': is_admin}
+        users[username] = {'password': password, 'balance': 0, 'is_admin': is_admin, 'transactions': []}
         UserManager.save_users(users)
         return True
 
@@ -40,20 +40,33 @@ class UserManager:
             return True
         return False
 
+    @staticmethod
+    def get_all_transactions():
+        users = UserManager.load_users()
+        all_transactions = []
+        for username, data in users.items():
+            for transaction in data.get('transactions', []):
+                transaction['user'] = username
+                all_transactions.append(transaction)
+        return all_transactions
 
-# User class to represent a single user
+
 class User:
     def __init__(self, username):
         self.username = username
         self.data = UserManager.load_users().get(username, {})
+        if 'transactions' not in self.data:
+            self.data['transactions'] = []
 
     def deposit(self, amount):
         self.data['balance'] += amount
+        self.data['transactions'].append({'type': 'deposit', 'amount': amount, 'balance_after': self.data['balance']})
         self.save()
 
     def withdraw(self, amount):
         if self.data['balance'] >= amount:
             self.data['balance'] -= amount
+            self.data['transactions'].append({'type': 'withdraw', 'amount': amount, 'balance_after': self.data['balance']})
             self.save()
             return True
         return False
@@ -61,6 +74,10 @@ class User:
     def transfer(self, recipient, amount):
         if self.withdraw(amount):
             recipient.deposit(amount)
+            self.data['transactions'].append({'type': 'transfer', 'amount': amount, 'recipient': recipient.username, 'balance_after': self.data['balance']})
+            recipient.data['transactions'].append({'type': 'received', 'amount': amount, 'sender': self.username, 'balance_after': recipient.data['balance']})
+            self.save()
+            recipient.save()
             return True
         return False
 
@@ -127,6 +144,8 @@ def admin_dashboard():
         return redirect(url_for('login'))
 
     users = UserManager.load_users()
+    all_transactions = UserManager.get_all_transactions()
+
     if request.method == 'POST':
         action = request.form['action']
         username = request.form['username']
@@ -146,13 +165,14 @@ def admin_dashboard():
             else:
                 flash(f'User {username} already exists', 'danger')
 
-    return render_template('admin_dashboard.html', users=users)
+    return render_template('admin_dashboard.html', users=users, all_transactions=all_transactions)
 
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)

@@ -62,7 +62,8 @@
         }
 
         form input,
-        form button {
+        form button,
+        form select {
             display: block;
             width: 100%;
             padding: 10px;
@@ -99,6 +100,17 @@
         .logout:hover {
             background-color: #c9302c;
         }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-container input {
+            width: auto;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -133,17 +145,53 @@
             </tbody>
         </table>
 
+        <!-- Add New User Section -->
         <h2>Add New User</h2>
         <div class="form-container">
             <form method="post">
                 <input type="hidden" name="action" value="add">
                 <input type="text" name="username" placeholder="Enter username" required>
-                <input type="number" name="balance" placeholder="Initial balance" step="0.01" required>
                 <input type="password" name="password" placeholder="Enter password" required>
-                <input type="text" name="is_admin" placeholder="Admin" required>
+                <div class="checkbox-container">
+                    <input type="checkbox" name="is_admin" id="is_admin">
+                    <label for="is_admin">Is Admin</label>
+                </div>
                 <button type="submit">Add User</button>
-            </form>            
+            </form>
         </div>
+
+        <!-- All Transactions Section -->
+        <h2>All Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Balance After</th>
+                    <th>Recipient/Sender</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in all_transactions %}
+                <tr>
+                    <td>{{ transaction.user }}</td>
+                    <td>{{ transaction.type }}</td>
+                    <td>${{ transaction.amount }}</td>
+                    <td>${{ transaction.balance_after }}</td>
+                    <td>
+                        {% if transaction.type == 'transfer' %}
+                            To: {{ transaction.recipient }}
+                        {% elif transaction.type == 'received' %}
+                            From: {{ transaction.sender }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <a href="/logout" class="logout">Logout</a>
     </div>
